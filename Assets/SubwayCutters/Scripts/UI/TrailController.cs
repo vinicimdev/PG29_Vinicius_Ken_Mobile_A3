@@ -3,6 +3,18 @@ using UnityEngine;
 
 public class TrailController : MonoBehaviour
 {
+    private TrailRenderer _trail;
+
+    private void Awake()
+    {
+        _trail = GetComponent<TrailRenderer>();
+    }
+
+    public void SwitchTrailMaterial(Material newMaterial)
+    {
+        _trail.material = newMaterial;
+    }
+
     private bool _inputDown = false;
     Vector2 _inputPos = Vector2.zero;
     

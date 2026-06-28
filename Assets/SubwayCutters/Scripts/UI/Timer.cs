@@ -42,7 +42,7 @@ public class Timer : MonoBehaviour
             SetTimerText();
         }
 
-        timerText.text = "0:00";
+        timerText.text = "00:00";
     }
 
     private void SetTimerText()

@@ -19,6 +19,13 @@ public static class GameState
         GameOver = null;
     }
 
+    public static void Reset()
+    {
+        Score = 0;
+        IsGameOver = false;
+        ScoreChanged?.Invoke(Score);
+    }
+
     public static void AddScore(int amount)
     {
         if (IsGameOver == true)

@@ -16,6 +16,7 @@ public class Timer : MonoBehaviour
 
     public void StartTimer()
     {
+        StopAllCoroutines();
         StartCoroutine(Countdown());
         _endTime = Time.time + countdownTime;
         SetTimerText();

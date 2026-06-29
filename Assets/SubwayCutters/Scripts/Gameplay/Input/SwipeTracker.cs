@@ -65,7 +65,6 @@ public class SwipeTracker : MonoBehaviour
         _previousScreen = startScreen;
         _instantDirection = Vector2.right;
 
-        Debug.Log($"[Swipe] Begin at screen {startScreen}");
     }
 
     private void UpdateSwipe(Vector2 currentPos)
@@ -97,14 +96,12 @@ public class SwipeTracker : MonoBehaviour
 
         if (totalLength < _minSwipeDistancePixels)
         {
-            Debug.Log($"[Swipe] End, ignored (only {totalLength:F1}px, below threshold).");
             return;
         }
 
         float overallAngle = Mathf.Atan2(totalDelta.y, totalDelta.x) * Mathf.Rad2Deg;
         float instantAngle = Mathf.Atan2(_instantDirection.y, _instantDirection.x) * Mathf.Rad2Deg;
 
-        Debug.Log($"[Swipe] End. Length: {totalLength:F1}px | Overall angle: {overallAngle:F1}° | Last-frame angle: {instantAngle:F1}°");
 
         SwipeEnded?.Invoke(_swipeStartScreen, _currentScreen);
     }

@@ -1,13 +1,22 @@
-using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(TrailRenderer))]
 public class TrailController : MonoBehaviour
 {
+    [SerializeField]
+    private Camera _camera;
+
     private TrailRenderer _trail;
 
     private void Awake()
     {
         _trail = GetComponent<TrailRenderer>();
+
+        if (_camera == null)
+        {
+            _camera = Camera.main;
+        }
     }
 
     public void SwitchTrailMaterial(Material newMaterial)
@@ -17,30 +26,43 @@ public class TrailController : MonoBehaviour
 
     private bool _inputDown = false;
     Vector2 _inputPos = Vector2.zero;
-    
+
     private void Update()
     {
-#if UNITY_EDITOR
-        _inputPos = Input.mousePosition;
-        _inputDown = Input.GetMouseButton(0);
-#else
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        Pointer pointer = Pointer.current;
+        if (pointer == null)
         {
-            inputPos = Input.GetTouch(0).position;
-            inputBegan = true;
+            _trail.emitting = false;
+            return;
         }
-#endif
-        
-        if (_inputDown)
+
+        bool isPressed = pointer.press.isPressed;
+
+        if (isPressed == true)
         {
-            Vector3 worldPos = TouchToWorldSpace(_inputPos);
-            transform.position = worldPos;
+            Vector2 screenPos = pointer.position.ReadValue();
+            transform.position = ScreenToWorld(screenPos);
+            _trail.emitting = true;
+        }
+        else
+        {
+            _trail.emitting = false;
         }
     }
-    
-    Vector3 TouchToWorldSpace(Vector2 screenPos)
+
+    private Vector3 ScreenToWorld(Vector2 screenPos)
     {
-        Vector3 screenWithDepth = new Vector3(screenPos.x, screenPos.y, Camera.main.WorldToScreenPoint(transform.position).z);
-        return Camera.main.ScreenToWorldPoint(screenWithDepth);
+        if (_camera == null)
+        {
+            _camera = Camera.main;
+            if (_camera == null)
+            {
+                return transform.position;
+            }
+        }
+
+        // Preserve current depth from the camera so the trail stays in the same XY plane.
+        float depth = _camera.WorldToScreenPoint(transform.position).z;
+        return _camera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, depth));
     }
 }
